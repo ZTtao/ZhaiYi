@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测一测</title>
+</head>
+<link type="text/css" rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+<body style="font-family:SimSun;width: 100%;">
+<div class="panel panel-default">
+    <div class="panel-body">
+        <img style="width: 100%;" src="/resources/tfht/img/test1.jpg" class="img-thumbnail">
+        <p style="font-size: 55px;text-align: center;">测试你是《我的前半生》中的谁</p>
+    </div>
+</div>
+<div class="panel panel-default" style="margin: 20px;">
+    <div class="page-header" style="padding-bottom: 20px;">
+        <span class="label label-info" style="font-size: 55px;margin-left: 20px;">Q1</span>
+        <span style="font-size: 54px;">你的性别</span>
+    </div>
+    <div style="text-align: center;padding-bottom: 20px;">
+        <button id="girl" style="width: 48%;height: 90px;font-size: 55px;font-weight: bold;background-color: #f7397c"
+                class="btn btn-default">
+            <i class="glyphicon glyphicon-ok" style="font-size: 40px;display: none;"></i>美女
+        </button>
+        <button id="boy" style="width: 48%;height: 90px;font-size: 55px;font-weight: bold;background-color: #2f8df7"
+                class="btn btn-default">
+            <i class="glyphicon glyphicon-ok" style="font-size: 40px;display: none;"></i>帅哥
+        </button>
+    </div>
+</div>
+<div class="panel panel-default" style="margin: 20px;">
+    <div class="page-header" style="padding-bottom: 20px;">
+        <span class="label label-info" style="font-size: 55px;margin-left: 20px;">Q2</span>
+        <span style="font-size: 54px;">选出你最喜欢的鞋</span>
+    </div>
+    <div id="imgGroup1" style="text-align: center;">
+        <div>
+            <img name="1-1" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="1-2" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="1-3" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+        </div>
+        <div>
+            <img name="2-1" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="2-2" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="2-3" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+        </div>
+        <div>
+            <img name="3-1" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="3-2" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="3-3" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+        </div>
+    </div>
+    <button onclick="changeImgGroup1()" style="width: 100%;font-size: 53px;" class="btn btn-default">没有喜欢的？换一批<i
+            class="glyphicon glyphicon-refresh"></i></button>
+</div>
+<div class="panel panel-default" style="margin: 20px;">
+    <div class="page-header" style="padding-bottom: 20px;">
+        <span class="label label-info" style="font-size: 55px;margin-left: 20px;">Q3</span>
+        <span style="font-size: 54px;">哪张图片你最可能发到朋友圈</span>
+    </div>
+    <div id="imgGroup2" style="text-align: center;">
+        <div>
+            <img name="1-1" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="1-2" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="1-3" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+        </div>
+        <div>
+            <img name="2-1" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="2-2" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="2-3" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+        </div>
+        <div>
+            <img name="3-1" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="3-2" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+            <img name="3-3" style="width: 30%;border: 10px solid #ffffff;" src="/resources/tfht/img/shoe1.jpg">
+        </div>
+    </div>
+    <button onclick="changeImgGroup2()" style="width: 100%;font-size: 53px;" class="btn btn-default">没有喜欢的？换一批<i
+            class="glyphicon glyphicon-refresh"></i></button>
+</div>
+<div style="text-align: center;">
+    <button onclick="showResult()" style="width: 95%;font-size: 55px;margin:20px;" class="btn btn-primary">查看结果</button>
+</div>
+<!-- Result Modal -->
+<div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel">
+    <div class="modal-dialog" role="document" style="width: 90%;max-width: 800px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <p style="font-size: 63px;" class="modal-title" id="resultModalLabel">你的测试结果是：<span
+                        id="resultName"></span></p>
+            </div>
+            <div class="modal-body">
+                <img style="width: 100%;" src="/resources/tfht/img/result1.png">
+                <span id="resultContent" style="font-size: 53px;"></span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/lib/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    var gender = "";
+    var img1 = "";
+    var img2 = "";
+    var flag1 = 2;
+    var flag2 = 2;
+    $("#girl").on("click", function () {
+        gender = "gril";
+        $(this.firstElementChild).show();
+        $(this.nextElementSibling.firstElementChild).hide();
+    });
+    $("#boy").on("click", function () {
+        gender = "boy";
+        $(this.firstElementChild).show();
+        $(this.previousElementSibling.firstElementChild).hide();
+    });
+    $("#imgGroup1 img").on("click", function () {
+        img1 = $(this).attr("name");
+        $("#imgGroup1 img").css("border", "10px solid #ffffff");
+        $(this).css("border", "10px solid #F7397C");
+    });
+    $("#imgGroup2 img").on("click", function () {
+        img2 = $(this).attr("name");
+        $("#imgGroup2 img").css("border", "10px solid #ffffff");
+        $(this).css("border", "10px solid #F7397C");
+    });
+    function changeImgGroup1() {
+        if (flag1 == 3) flag1 = 1;
+        $("#imgGroup1 img").attr("src", "/resources/tfht/img/shoe" + (flag1++) + ".jpg");
+        $("#imgGroup1 img").css("border", "10px solid #ffffff");
+        img1 = "";
+    }
+    function changeImgGroup2() {
+        if (flag2 == 3) flag2 = 1;
+        $("#imgGroup2 img").attr("src", "/resources/tfht/img/shoe" + (flag2++) + ".jpg");
+        $("#imgGroup2 img").css("border", "10px solid #ffffff");
+        img2 = "";
+    }
+    function showResult() {
+        if (gender == "" || img1 == "" || img2 == "") {
+            alert("还有没选择的哦～");
+        } else {
+            $("#resultModal").modal();
+            $("#resultName").text("薇薇安");
+            $("#resultContent").text("职场时尚女强人，敢爱敢恨，有胆识、性格直率、日夜兼程的全副武装换得独立自主，男人幻想、女人嫉妒的对象，但她却只钟情于一人，对贺涵毫无保留的爱和付出，让人心疼。")
+        }
+    }
+</script>
+</html>
