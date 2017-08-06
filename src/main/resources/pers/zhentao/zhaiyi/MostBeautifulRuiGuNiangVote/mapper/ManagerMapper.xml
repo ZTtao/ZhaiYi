@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.mapper.ManagerMapper">
+    <resultMap id="BaseResultMap" type="pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.dto.Manager">
+        <result column="manager_id" property="managerId" jdbcType="INTEGER"/>
+        <result column="account" property="account" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="auth" property="auth" jdbcType="INTEGER"/>
+        <result column="created_date" property="createdDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="selectByAccountPassword" resultMap="BaseResultMap">
+        SELECT * FROM mbrgnv_manager
+        WHERE account=#{account} and password=#{password}
+    </select>
+</mapper>

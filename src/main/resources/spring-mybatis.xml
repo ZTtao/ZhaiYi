@@ -25,10 +25,11 @@
     </bean>
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
-        <property name="mapperLocations" value="classpath:pers/zhentao/zhaiyi/mapper/*.xml"/>
+        <property name="mapperLocations" value="classpath:pers/zhentao/zhaiyi/*/mapper/*.xml"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml" />
     </bean>
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="pers.zhentao.zhaiyi.mapper"/>
+        <property name="basePackage" value="pers.zhentao.zhaiyi"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
