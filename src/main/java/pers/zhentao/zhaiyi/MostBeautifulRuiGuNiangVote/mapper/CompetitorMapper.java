@@ -11,6 +11,14 @@ import java.util.List;
  */
 public interface CompetitorMapper {
     List<Competitor> select(@Param(value = "dto") Competitor dto);
-    int updateIsPass(@Param(value = "id")int id);
-    int insert(@Param(value = "dto")Competitor dto);
+
+    int updateIsPass(@Param(value = "id") int id, @Param(value = "number") int number);
+
+    int updateNotPass(@Param(value = "id") int id);
+
+    int insert(@Param(value = "dto") Competitor dto);
+
+    int selectMaxNumber();
+
+    List<Competitor> selectRank();
 }

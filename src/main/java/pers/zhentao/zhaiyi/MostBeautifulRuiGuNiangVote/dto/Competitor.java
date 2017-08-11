@@ -16,7 +16,16 @@ public class Competitor {
     private Boolean isPass;
     private String phone;
     private String pictureUrl;
+    private int pollCount;
     private Date createdDate;
+
+    public int getPollCount() {
+        return pollCount;
+    }
+
+    public void setPollCount(int pollCount) {
+        this.pollCount = pollCount;
+    }
 
     public String getPictureUrl() {
         return pictureUrl;

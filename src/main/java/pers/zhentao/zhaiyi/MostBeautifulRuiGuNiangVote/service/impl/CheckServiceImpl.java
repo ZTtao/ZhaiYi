@@ -34,20 +34,28 @@ public class CheckServiceImpl implements ICheckService {
     }
 
     @Override
-    public Map<String,Object> getCompetitors(Competitor dto, int pageSize, int pageNum) {
-        Page<Competitor> p = PageHelper.startPage(pageNum,pageSize);
+    public Map<String, Object> getCompetitors(Competitor dto, int pageSize, int pageNum) {
+        Page<Competitor> p = PageHelper.startPage(pageNum, pageSize);
         List<Competitor> list = competitorMapper.select(dto);
         Long total = p.getTotal();
-        Map<String,Object> map = new HashMap<>();
-        map.put("total",total);
-        map.put("rows",list);
+        Map<String, Object> map = new HashMap<>();
+        map.put("total", total);
+        map.put("rows", list);
         return map;
     }
 
     @Override
-    public Boolean changeState(int competitorId) {
-        int count = competitorMapper.updateIsPass(competitorId);
-        if(count>0)return true;
+    public Boolean setIsPass(int competitorId) {
+        int number = competitorMapper.selectMaxNumber();
+        int count = competitorMapper.updateIsPass(competitorId, number + 1);
+        if (count > 0) return true;
+        return false;
+    }
+
+    @Override
+    public Boolean setNotPass(int competitorId) {
+        int count = competitorMapper.updateNotPass(competitorId);
+        if (count > 0) return true;
         return false;
     }
 }

@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>最美瑞姑娘</title>
 </head>
 <link type="text/css" rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
 <style type="text/css">
@@ -73,13 +73,13 @@
         font-size: 40px;
     }
 
-    .poll-label {
+    .pollCount-label {
         font-size: 45px;
         float: right;
         margin: 25px;
     }
 
-    .poll-number {
+    .pollCount-number {
         color: #f72f3f;
         font-weight: bold;
     }
@@ -93,52 +93,6 @@
      style="margin:200px auto;width: 90%;background: #ffffff;position: relative;">
     <i style="position: absolute;top: -100px;left: 50%;margin-left: -350px;width:700px;height:155px;display: block;background-image: url('/resources/mbrgnv/img/icon.png');background-position: -265px -5px;background-size: 2050px 155px;"></i>
     <div id="rank-list-div" style="width: 90%;margin: 100px auto 0px;">
-        <!-- test data start-->
-        <div onclick='showInfo()' class="rank-item-out">
-            <span>
-                <i class="top-three-icon first-icon"></i>
-            </span>
-            <img class="avatar" src="/resources/mbrgnv/img/avatar.png">
-            <div class="info-div">
-                <span class="info-div-name">名字A</span>
-                <span class="info-div-number">99号</span>
-            </div>
-            <p class="poll-label"><span class="poll-number">12345</span>票</p>
-        </div>
-        <div onclick='showInfo()' class="rank-item-out">
-            <span>
-                <i class="top-three-icon second-icon"></i>
-            </span>
-            <img class="avatar" src="/resources/mbrgnv/img/avatar.png">
-            <div class="info-div">
-                <span class="info-div-name">名字A</span>
-                <span class="info-div-number">99号</span>
-            </div>
-            <p class="poll-label"><span class="poll-number">12345</span>票</p>
-        </div>
-        <div onclick='showInfo()' class="rank-item-out">
-            <span>
-                <i class="top-three-icon third-icon"></i>
-            </span>
-            <img class="avatar" src="/resources/mbrgnv/img/avatar.png">
-            <div class="info-div">
-                <span class="info-div-name">名字A</span>
-                <span class="info-div-number">99号</span>
-            </div>
-            <p class="poll-label"><span class="poll-number">12345</span>票</p>
-        </div>
-        <div onclick='showInfo()' class="rank-item-out">
-            <span class="rank-item-number">
-                4
-            </span>
-            <img class="avatar" src="/resources/mbrgnv/img/avatar.png">
-            <div class="info-div">
-                <span class="info-div-name">名字A</span>
-                <span class="info-div-number">99号</span>
-            </div>
-            <p class="poll-label"><span class="poll-number">12345</span>票</p>
-        </div>
-        <!-- test data end-->
     </div>
     <a id="load-more-btn" style="font-size: 45px;width: 90%;height: 100px;border: 0px;" class="btn btn-default">
         加载更多
@@ -147,29 +101,59 @@
 <%@include file="footer.html" %>
 </body>
 <script type="text/javascript">
-    $("#load-more-btn").on("click", function () {
-        for (var i = 0; i < 10; i++) {
-            var rank = 4;
-            var avatar = "/resources/mbrgnv/img/avatar.png";
-            var name = "名字";
-            var number = "99号";
-            var poll = "123456";
-            var template = "<div onclick='showInfo()' class='rank-item-out'>" +
-                "<span class='rank-item-number'>4</span>" +
-                "<img class='avatar' src='" + avatar + "'>" +
-                "<div class='info-div'>" +
-                "<span class='info-div-name'>" + name + "</span>" +
-                "<span class='info-div-number'>" + number + "</span>" +
-                "</div>" +
-                "<p class='poll-label'>" +
-                "<span class='poll-number'>" + poll + "</span>票" +
-                "</p>" +
-                "</div>";
-            $("#rank-list-div").append(template);
+    var pageNum = 1;
+    var total = null;
+    queryData(pageNum);
+    function queryData(pageNum) {
+        if (total != null) {
+            if (total <= (pageNum - 1) * 10) {
+                $("#load-more-btn").hide();
+                alert("没有更多了");
+                return;
+            }
         }
+        $.ajax({
+            url: '/mbrgnv/queryRank',
+            type: 'post',
+            data: 'pageNum=' + pageNum,
+            success: function (data) {
+                total = data.total;
+                for (var i = 0; i < data.rows.length; i++) {
+                    var rank = (pageNum - 1) * 10 + i + 1;
+                    var avatar = data.rows[i].pictureUrl;
+                    var name = data.rows[i].name;
+                    var number = data.rows[i].number;
+                    var pollCount = data.rows[i].pollCount;
+                    var template = "<div onclick='showInfo(" + data.rows[i].competitorId + ")' class='rank-item-out'>";
+                    if (rank == 1) {
+                        template += "<span><i class='top-three-icon first-icon'></i></span>";
+                    } else if (rank == 2) {
+                        template += "<span><i class='top-three-icon second-icon'></i></span>";
+                    } else if (rank == 3) {
+                        template += "<span><i class='top-three-icon third-icon'></i></span>";
+                    } else {
+                        template += "<span class='rank-item-number'>" + rank + "</span>";
+                    }
+                    template += "<img class='avatar' src='" + avatar + "'>" +
+                        "<div class='info-div'>" +
+                        "<span class='info-div-name'>" + name + "</span>" +
+                        "<span class='info-div-number'>" + number + "号</span>" +
+                        "</div>" +
+                        "<p class='pollCount-label'>" +
+                        "<span class='pollCount-number'>" + pollCount + "</span>票" +
+                        "</p>" +
+                        "</div>";
+                    $("#rank-list-div").append(template);
+                }
+            }
+        });
+    }
+    $("#load-more-btn").on("click", function () {
+        pageNum++;
+        queryData(pageNum);
     });
-    function showInfo() {
-        window.location.href = "/mbrgnv/info";
+    function showInfo(id) {
+        window.location.href = "/mbrgnv/info?id=" + id;
     }
 </script>
 </html>

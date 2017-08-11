@@ -11,5 +11,6 @@ import java.util.Map;
 public interface ICheckService {
     Boolean checkAccount(String account,String password);
     Map<String,Object> getCompetitors(Competitor dto, int pageSize, int pageNum);
-    Boolean changeState(int competitorId);
+    Boolean setIsPass(int competitorId);
+    Boolean setNotPass(int competitorId);
 }

@@ -207,7 +207,7 @@
             data:{account:account,password:password},
             success:function (data) {
                 if(data.success == "true"){
-                    window.location.href="/mbrgnvcheck";
+                    window.location.href="/mbrgnvcheck?account="+account+"&password="+password;
                 }else{
                     $("#msg").text("账号或密码错误");
                 }

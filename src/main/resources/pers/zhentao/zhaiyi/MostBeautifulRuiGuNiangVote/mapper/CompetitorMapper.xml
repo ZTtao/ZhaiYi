@@ -12,13 +12,15 @@
         <result column="phone" property="phone" jdbcType="VARCHAR"/>
         <result column="picture_url" property="pictureUrl" jdbcType="VARCHAR"/>
         <result column="created_date" property="createdDate" jdbcType="TIMESTAMP"/>
+        <association property="pollCount" column="competitor_id"
+                     select="pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.mapper.PollMapper.countByCompetitorId"/>
     </resultMap>
     <sql id="queryClause">
         <if test="dto.competitorId!=0">
             and competitor_id=#{dto.competitorId}
         </if>
         <if test="dto.name!=null">
-            and INSTR(name,#{dto.name})
+            and (INSTR(name,#{dto.name}) OR INSTR(number,#{dto.name}))
         </if>
         <if test="dto.number!=0">
             and INSTR(number,#{dto.number})
@@ -35,14 +37,24 @@
         <if test="dto.phone!=null">
             and INSTR(phone,#{dto.phone})
         </if>
+        <if test="dto.declaration!=null">
+            and INSTR(declaration,#{dto.declaration})
+        </if>
     </sql>
     <select id="select" resultMap="BaseResultMap">
         select * from mbrgnv_competitor
         WHERE 1=1
         <include refid="queryClause"></include>
+        order by number
     </select>
     <update id="updateIsPass">
-        UPDATE mbrgnv_competitor SET is_pass = IF(is_pass=0,1,0)
+        UPDATE mbrgnv_competitor SET is_pass = 1,number=#{number}
+        <where>
+            competitor_id=#{id}
+        </where>
+    </update>
+    <update id="updateNotPass">
+        UPDATE mbrgnv_competitor SET is_pass = 0,number=0
         <where>
             competitor_id=#{id}
         </where>
@@ -51,4 +63,13 @@
         INSERT INTO mbrgnv_competitor(name,number,declaration,wechat_id,open_id,phone,picture_url)
         VALUES (#{dto.name},#{dto.number},#{dto.declaration},#{dto.wechatId},#{dto.openId},#{dto.phone},#{dto.pictureUrl})
     </insert>
+    <select id="selectMaxNumber" resultType="java.lang.Integer">
+        SELECT MAX(number) from mbrgnv_competitor
+    </select>
+    <select id="selectRank" resultMap="BaseResultMap">
+        SELECT a.competitor_id,a.name,a.number,a.declaration,a.wechat_id,a.open_id,a.is_pass,a.phone,a.picture_url,a.created_date,count(b.poll_id) as count
+        FROM db_zhaiyi.mbrgnv_competitor a left join mbrgnv_poll b
+        on a.competitor_id=b.competitor_id
+         WHERE a.is_pass=1 group by a.competitor_id order by count desc
+    </select>
 </mapper>

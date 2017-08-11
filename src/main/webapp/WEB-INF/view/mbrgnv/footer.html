@@ -1,3 +1,4 @@
+<%@page pageEncoding="UTF-8"%>
 <div style="z-index: 10000;background-color:#ffffff;width: 100%;height: 150px;position: fixed;bottom: 0;left: 0px;margin: 0px;"
      class="panel panel-default">
     <button id="footer-homepage-btn"
@@ -17,7 +18,8 @@
            style="background: url('/resources/mbrgnv/img/icon-footer.png') no-repeat;background-size:1200px;background-position:-210px 0px;width: 100px;height: 100px;display: block;margin: 0 auto;"></i>
         &#x62A5;&#x540D;
     </button>
-    <button id="footer-explain-btn" style="background-color:#ffffff;font-size: 40px;width: 24%;border: 0px;padding: 0px;">
+    <button id="footer-explain-btn"
+            style="background-color:#ffffff;font-size: 40px;width: 24%;border: 0px;padding: 0px;">
         <i id="footer-explain-icon"
            style="background: url('/resources/mbrgnv/img/icon-footer.png') no-repeat;background-size:1200px;background-position:-305px 0px;width: 100px;height: 100px;display: block;margin: 0 auto;"></i>
         &#x6D3B;&#x52A8;&#x8BF4;&#x660E;
@@ -26,23 +28,54 @@
 <script type="text/javascript">
     if (pageIndex == "homepage") {
         $("#footer-homepage-icon").css("background-position", "-407px -5px");
-    }else if(pageIndex == "explain"){
+    } else if (pageIndex == "explain") {
         $("#footer-explain-icon").css("background-position", "-706px -5px");
-    }else if(pageIndex == "rank"){
+    } else if (pageIndex == "rank") {
         $("#footer-ranklist-icon").css("background-position", "-511px -5px");
-    }else if(pageIndex == "apply"){
+    } else if (pageIndex == "apply") {
         $("#footer-apply-icon").css("background-position", "-611px -5px");
     }
-    $("#footer-homepage-btn").on("click",function () {
+    $("#footer-homepage-btn").on("click", function () {
         window.location.href = "/mbrgnv";
     });
-    $("#footer-explain-btn").on("click",function () {
+    $("#footer-explain-btn").on("click", function () {
         window.location.href = "/mbrgnv/explain";
     });
-    $("#footer-ranklist-btn").on("click",function () {
+    $("#footer-ranklist-btn").on("click", function () {
         window.location.href = "/mbrgnv/rank";
     });
-    $("#footer-apply-btn").on("click",function () {
+    $("#footer-apply-btn").on("click", function () {
         window.location.href = "/mbrgnv/apply";
     });
+    function poll(competitorId) {
+        var openId = new Date().getMilliseconds();
+        $.ajax({
+            url: '/mbrgnv/poll',
+            type: 'post',
+            data: "openId=" + openId + "&competitorId=" + competitorId,
+            success: function (data) {
+                if (data.success == "true") {
+                    alert("投票成功");
+                    if (pageIndex == "info")
+                        window.location.reload();
+                } else {
+                    if (data.result == "2") {
+                        alert("投票失败，请重试");
+                        if (pageIndex == "info")
+                            window.location.reload();
+                    } else if(data.result == "3"){
+                        alert("当天投票数已满，明天再来吧～");
+                        if (pageIndex == "info")
+                            window.location.reload();
+                    }else if(data.result == "4"){
+                        alert("投票时间已过");
+                    }
+                }
+            },
+            error: function () {
+                alert("投票失败，请重试");
+                window.location.reload();
+            }
+        })
+    }
 </script>

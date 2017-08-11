@@ -7,16 +7,25 @@ import java.util.Date;
  *         2017-08-06
  */
 public class AccessInfo {
-    private Long access_id;
+    private Long accessId;
     private String openId;
     private Date createdDate;
+    private String sessionId;
 
-    public Long getAccess_id() {
-        return access_id;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setAccess_id(Long access_id) {
-        this.access_id = access_id;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public Long getAccessId() {
+        return accessId;
+    }
+
+    public void setAccessId(Long accessId) {
+        this.accessId = accessId;
     }
 
     public String getOpenId() {

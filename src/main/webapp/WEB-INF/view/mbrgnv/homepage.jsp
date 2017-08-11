@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>最美瑞姑娘</title>
 </head>
 <link type="text/css" rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
 <style type="text/css">
@@ -35,7 +35,7 @@
         border-bottom: 2px solid white;
     }
 
-    .item-poll-out {
+    .item-pollCount-out {
         font-size: 45px;
         margin-left: 20px;
         margin-right: 20px;
@@ -43,7 +43,7 @@
         zoom: 1;
     }
 
-    .item-poll {
+    .item-pollCount {
         color: #ffffff;
         float: left;
     }
@@ -81,9 +81,9 @@
     <img style="width: 100%;" src="/resources/mbrgnv/img/homepage_top.png">
 </div>
 <ul style="list-style: none;font-size:45px;height: 100px;margin:0 40px 0 40px;">
-    <li style="float: left;width:30%;">123456</li>
-    <li style="float: left;width:30%;">123456</li>
-    <li style="float: left;width:30%;">123456</li>
+    <li id="joinCount" style="float: left;width:30%;"></li>
+    <li id="totalPoll" style="float: left;width:30%;"></li>
+    <li id="accessCount" style="float: left;width:30%;"></li>
 </ul>
 <ul style="list-style: none;font-size:45px;border-top: 5px solid #7d7d7d;padding-top: 30px;margin:0 40px 0 40px;">
     <li style="float: left;width:30%;position: relative;">
@@ -110,23 +110,19 @@
 </div>
 <div style="background-color: #f3f88c;width: 80%;height: 150px;margin: 40px auto;">
     <p style="font-size: 45px;color: #f7397c;">活动时间</p>
-    <p style="font-size: 45px;color: #f7397c;">2017.08.05&nbsp;12:12&nbsp;-&nbsp;2017.08.05&nbsp;12:12</p>
+    <p style="font-size: 45px;color: #f7397c;">2017.08.19&nbsp;&nbsp;-&nbsp;&nbsp;2017.09.16</p>
 </div>
 <div id="list-div" style="width: 90%;margin:0 auto 190px;overflow:hidden;zoom:1;">
-    <div class="item-out">
-        <img onclick="showInfo()" class="item-img" src="/resources/mbrgnv/img/avatar.png">
-        <p class="item-name">名称A</p>
-        <div class="item-poll-out">
-            <span class="item-poll">99票</span>
-            <button class="btn btn-default item-button">投票</button>
-        </div>
-        <i class="item-number">1号</i>
-    </div>
+
 </div>
 <%@include file="footer.html" %>
 </body>
 <script type="text/javascript">
     var isSearchShow = false;
+    var pageNum = 1;
+    var total = null;
+    var isLoading = true;
+    queryData(pageNum);
     $("#div-search").on("click", function () {
         if (!isSearchShow) {
             $("#search-hint").hide();
@@ -139,7 +135,36 @@
     $("#search-icon").on("click", function () {
         if (isSearchShow) {
             //do search
-
+            if ($("#search-input").val() == "") {
+                $("#list-div").html("");
+                pageNum = 1;
+                total = null;
+                queryData(pageNum);
+            } else {
+                $("#list-div").html("");
+                $.ajax({
+                    url: '/mbrgnv/query',
+                    type: 'post',
+                    data: 'pageSize=100000&pageNum=' + pageNum + '&name=' + $("#search-input").val(),
+                    success: function (data) {
+                        isLoading = false;
+                        total = data.total;
+                        pageNum = 100000;
+                        $("#joinCount").text(data.joinCount);
+                        $("#totalPoll").text(data.totalPoll);
+                        $("#accessCount").text(data.totalAccess);
+                        for (var i = 0; i < data.rows.length; i++) {
+                            var name = data.rows[i].name;
+                            var pollCount = data.rows[i].pollCount;
+                            var number = data.rows[i].number;
+                            var avatar = data.rows[i].pictureUrl;
+                            var id = data.rows[i].competitorId;
+                            var template = "<div class='item-out'><img onclick='showInfo(" + data.rows[i].competitorId + ")' class='item-img' src='" + avatar + "'> <p class='item-name'>" + name + "</p> <div class='item-pollCount-out'> <span class='item-pollCount'>" + pollCount + "票</span> <button onclick='poll(" + id + ")' class='btn btn-default item-button'>投票</button> </div> <i class='item-number'>" + number + "号</i> </div>";
+                            $("#list-div").append(template);
+                        }
+                    }
+                });
+            }
         }
     });
     $("#search-close").on("click", function () {
@@ -158,18 +183,42 @@
         var windowHeight = window.innerHeight;
         if (scrollTop + windowHeight == documentHeight) {
             //scroll to bottom
-            for (var i = 0; i < 10; i++) {
-                var name = "名字A";
-                var poll = "99";
-                var number = "99";
-                var avatar = "/resources/mbrgnv/img/avatar.png";
-                var template = "<div class='item-out'><img onclick='showInfo()' class='item-img' src='" + avatar + "'> <p class='item-name'>" + name + "</p> <div class='item-poll-out'> <span class='item-poll'>" + poll + "票</span> <button class='btn btn-default item-button'>投票</button> </div> <i class='item-number'>" + number + "号</i> </div>";
-                $("#list-div").append(template);
-            }
+            if (isLoading)return;
+            pageNum++;
+            queryData(pageNum);
         }
     });
-    function showInfo() {
-        window.location.href = "/mbrgnv/info";
+    function showInfo(id) {
+        window.location.href = "/mbrgnv/info?id=" + id;
     }
+    function queryData(pageNum) {
+        if (total != null) {
+            if (total <= (pageNum - 1) * 10) {
+                return;
+            }
+        }
+        $.ajax({
+            url: '/mbrgnv/query',
+            type: 'post',
+            data: 'pageNum=' + pageNum,
+            success: function (data) {
+                isLoading = false;
+                total = data.total;
+                $("#joinCount").text(data.joinCount);
+                $("#totalPoll").text(data.totalPoll);
+                $("#accessCount").text(data.totalAccess);
+                for (var i = 0; i < data.rows.length; i++) {
+                    var name = data.rows[i].name;
+                    var pollCount = data.rows[i].pollCount;
+                    var number = data.rows[i].number;
+                    var avatar = data.rows[i].pictureUrl;
+                    var id = data.rows[i].competitorId;
+                    var template = "<div class='item-out'><img onclick='showInfo(" + data.rows[i].competitorId + ")' class='item-img' src='" + avatar + "'> <p class='item-name'>" + name + "</p> <div class='item-pollCount-out'> <span class='item-pollCount'>" + pollCount + "票</span> <button onclick='poll(" + id + ")' class='btn btn-default item-button'>投票</button> </div> <i class='item-number'>" + number + "号</i> </div>";
+                    $("#list-div").append(template);
+                }
+            }
+        });
+    }
+
 </script>
 </html>
