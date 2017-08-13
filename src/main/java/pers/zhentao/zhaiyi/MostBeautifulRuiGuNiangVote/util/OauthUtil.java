@@ -1,14 +1,18 @@
 package pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.util;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.log4j.Logger;
 import pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.dto.SNSUserInfo;
 import pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.dto.WeixinOauth2Token;
+
+import java.util.Date;
 
 /**
  * @author ZhangZhentao
  *         2017-08-08
  */
 public class OauthUtil {
+    public static Logger logger = Logger.getLogger(OauthUtil.class);
     public static WeixinOauth2Token getOauth2AccessToken(String appId, String appSecret, String code) {
         WeixinOauth2Token weixinOauth2Token = null;
         String requestUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
@@ -24,10 +28,17 @@ public class OauthUtil {
                 weixinOauth2Token.setRefreshToken(jsonObject.getString("refresh_token"));
                 weixinOauth2Token.setOpenId(jsonObject.getString("openid"));
                 weixinOauth2Token.setScope(jsonObject.getString("scope"));
+                logger.info("["+new Date()+"]weixinOauth2Token.getAccessToken:"+weixinOauth2Token.getAccessToken());
+                logger.info("["+new Date()+"]weixinOauth2Token.getExpiresIn:"+weixinOauth2Token.getExpiresIn());
+                logger.info("["+new Date()+"]weixinOauth2Token.getRefreshToken:"+weixinOauth2Token.getRefreshToken());
+                logger.info("["+new Date()+"]weixinOauth2Token.getOpenId:"+weixinOauth2Token.getOpenId());
+                logger.info("["+new Date()+"]weixinOauth2Token.getScope:"+weixinOauth2Token.getScope());
             } catch (Exception e) {
                 weixinOauth2Token = null;
                 int errorCode = jsonObject.getInteger("errcode");
                 String errorMsg = jsonObject.getString("errmsg");
+                logger.error("["+new Date()+"]errorCode:"+errorCode);
+                logger.error("["+new Date()+"]errorMsg:"+errorMsg);
             }
         }
         return weixinOauth2Token;

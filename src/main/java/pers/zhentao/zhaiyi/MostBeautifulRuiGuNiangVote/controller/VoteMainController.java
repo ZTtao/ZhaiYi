@@ -1,6 +1,7 @@
 package pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.controller;
 
 import com.sun.org.apache.xpath.internal.operations.Mod;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -13,16 +14,14 @@ import pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.dto.AccessInfo;
 import pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.dto.Competitor;
 import pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.dto.WeixinOauth2Token;
 import pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.service.IVoteService;
+import pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.util.CommonUtil;
 import pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.util.OauthUtil;
 import sun.util.resources.cldr.aa.CalendarData_aa_DJ;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author ZhangZhentao
@@ -31,34 +30,47 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/mbrgnv")
 public class VoteMainController {
-
+    private Logger logger = Logger.getLogger(VoteMainController.class);
     @Autowired
     @Qualifier("VoteServiceImpl")
     private IVoteService voteService;
 
     @RequestMapping(value = "")
-    public String homepage(HttpServletRequest request) {
+    public String homepage(HttpServletRequest request,Model model) {
         HttpSession session = request.getSession();
+        String openId = request.getParameter("openId");
         if (!voteService.hasAccess(session.getId())) {
             AccessInfo accessInfo = new AccessInfo();
             accessInfo.setSessionId(session.getId());
+            accessInfo.setOpenId(openId);
             voteService.addAccessRecord(accessInfo);
         }
+        logger.info("["+new Date()+"]openId:"+openId);
+        model.addAttribute("openId",openId);
         return "/mbrgnv/homepage.jsp";
     }
 
     @RequestMapping(value = "/explain")
-    public String explain(HttpServletRequest request) {
+    public String explain(HttpServletRequest request,Model model) {
+        String openId = request.getParameter("openId");
+        logger.info("["+new Date()+"]openId:"+openId);
+        model.addAttribute("openId",openId);
         return "/mbrgnv/explain.jsp";
     }
 
     @RequestMapping(value = "/rank")
-    public String rank(HttpServletRequest request) {
+    public String rank(HttpServletRequest request,Model model) {
+        String openId = request.getParameter("openId");
+        logger.info("["+new Date()+"]openId:"+openId);
+        model.addAttribute("openId",openId);
         return "/mbrgnv/rank-list.jsp";
     }
 
     @RequestMapping(value = "/apply")
-    public String apply(HttpServletRequest request) {
+    public String apply(HttpServletRequest request,Model model) {
+        String openId = request.getParameter("openId");
+        logger.info("["+new Date()+"]openId:"+openId);
+        model.addAttribute("openId",openId);
         return "/mbrgnv/apply.jsp";
     }
 
@@ -67,6 +79,9 @@ public class VoteMainController {
         String id = (String) request.getParameter("id");
         Competitor competitor = voteService.getCompetitorById(Integer.parseInt(id));
         model.addAttribute("competitor", competitor);
+        String openId = request.getParameter("openId");
+        logger.info("["+new Date()+"]openId:"+openId);
+        model.addAttribute("openId",openId);
         return "/mbrgnv/info-page.jsp";
     }
 
@@ -74,18 +89,36 @@ public class VoteMainController {
     public String picture(HttpServletRequest request, Model model) {
         String url = request.getParameter("pictureUrl");
         model.addAttribute("pictureUrl", url);
+        String openId = request.getParameter("openId");
+        logger.info("["+new Date()+"]openId:"+openId);
+        model.addAttribute("openId",openId);
         return "/mbrgnv/show-picture.jsp";
     }
 
     @RequestMapping(value = "/submit")
     public String submitData(Model model, @RequestParam(value = "file", required = false) MultipartFile file, String name, String phone, String declaration, HttpServletRequest request) {
+        String openId = request.getParameter("openId");
+        if(!CommonUtil.isSubscript(openId)){
+            model.addAttribute("openId",openId);
+            model.addAttribute("apply", "nosubscript");
+            model.addAttribute("result", "未关注公众号");
+            return "/mbrgnv/apply.jsp";
+        }
         //校验微信号是否已报名
-
+        Competitor dto = new Competitor();
+        dto.setOpenId(openId);
+        List<Competitor> list = (List<Competitor>)voteService.getCompetitors(dto,10,1).get("rows");
+        if(list.size()>0){
+            model.addAttribute("openId",openId);
+            model.addAttribute("apply", "hasapply");
+            model.addAttribute("result", "已报名");
+            return "/mbrgnv/apply.jsp";
+        }
         Competitor competitor = new Competitor();
         competitor.setName(name);
         competitor.setPhone(phone);
-        competitor.setWechatId("test");
-        competitor.setOpenId("test1");
+        competitor.setWechatId("");
+        competitor.setOpenId(openId);
         competitor.setDeclaration(declaration);
         competitor.setNumber(0);
         String path = request.getSession().getServletContext().getRealPath("upload");
@@ -107,24 +140,9 @@ public class VoteMainController {
             model.addAttribute("apply", "error");
             model.addAttribute("result", "未知错误，请重试");
         }
+        logger.info("["+new Date()+"]openId:"+openId);
+        model.addAttribute("openId",openId);
         return "/mbrgnv/apply.jsp";
-    }
-
-    @RequestMapping(value = "/auth")
-    public String auth(HttpServletRequest request, Model model) {
-        String code = request.getParameter("code");
-        String appId = "wxa4acc514572f1238";
-        String appSecret = "5eca522851575a5dcf4aa0127023ef1a";
-        if (!"authdeny".equals(code)) {
-            WeixinOauth2Token weixinOauth2Token = OauthUtil.getOauth2AccessToken(appId, appSecret, code);
-            String accessToken = weixinOauth2Token.getAccessToken();
-            String openId = weixinOauth2Token.getOpenId();
-            model.addAttribute("openId", openId + "-m");
-            model.addAttribute("accessToken", accessToken + "-m");
-            request.setAttribute("openId", openId);
-            request.setAttribute("accessToken", accessToken);
-        }
-        return "/mbrgnv/test-auth.jsp";
     }
 
     @RequestMapping(value = "/query")
@@ -144,10 +162,15 @@ public class VoteMainController {
 
     @RequestMapping(value = "/poll")
     @ResponseBody
-    public Map<String, Object> poll(HttpServletRequest request) {
+    public Map<String, Object> poll(HttpServletRequest request,Model model) {
         Map<String, Object> map = new HashMap<>();
         int competitorId = Integer.parseInt(request.getParameter("competitorId"));
         String openId = request.getParameter("openId");
+        if(!CommonUtil.isSubscript(openId)){
+            map.put("success", "false");
+            map.put("result", "5");
+            return map;
+        }
         Calendar calendar = Calendar.getInstance();
         Date date = new Date();
         date.setYear(117);

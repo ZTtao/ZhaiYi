@@ -16,6 +16,10 @@
 </script>
 <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
 <body style="background-color: #f7397c;text-align: center;">
+<%
+    String openId = (String) request.getAttribute("openId");
+    out.print("<script>var openId='" + openId + "';</script>");
+%>
 <div class="panel panel-default"
      style="margin:200px auto;width: 90%;background: #ffffff;position: relative;">
     <i style="position: absolute;top: -100px;left: 50%;margin-left: -350px;width:700px;height:155px;display: block;background-image: url('/resources/mbrgnv/img/icon.png');background-position: -973px -5px;background-size: 2050px 155px;"></i>

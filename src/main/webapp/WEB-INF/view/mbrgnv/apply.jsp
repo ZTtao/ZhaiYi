@@ -16,9 +16,15 @@
     var pageIndex = "apply";
 </script>
 <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/lib/bootstrap/js/bootstrap.min.js"></script>
 <body style="text-align: center;">
+<%
+    String openId = (String) request.getAttribute("openId");
+    out.print("<script>var openId='" + openId + "';</script>");
+%>
 <img style="width: 100%;" src="/resources/mbrgnv/img/homepage_top.png">
-<form id="form" action="/mbrgnv/submit" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+<form id="form" action="/mbrgnv/submit?openId=<%=openId%>" method="post" enctype="multipart/form-data"
+      accept-charset="UTF-8">
     <div style="width: 70%;height: 50px;font-size: 45px;margin: 100px auto 0px;" class="input-group input-group-lg">
         <span style="font-size: 45px;height: 80px;" class="input-group-addon">姓名</span>
         <input id="name" name="name" style="font-size: 45px;height: 80px;" type="text" class="form-control"
@@ -42,20 +48,26 @@
             style="font-size: 45px;width: 80%;height: 100px;margin: 100px auto 200px;" class="btn btn-primary">报名参赛
     </button>
 </form>
+
+<%@include file="footer.html" %>
 <%
     String apply = (String) request.getAttribute("apply");
     if (apply != null) {
         if (apply.equals("success")) {
             out.print("<script>alert('报名成功');</script>");
+            out.print("<script>window.location.href='/mbrgnv/apply?openId="+openId+"'</script>");
+        } else if (apply.equals("nosubscript")) {
+            out.print("<script>$('#resultModal').modal();</script>");
+        } else if (apply.equals("hasapply")) {
+            out.print("<script>alert('该微信号已经报名');</script>");
+            out.print("<script>window.location.href='/mbrgnv/apply?openId="+openId+"'</script>");
         } else {
             out.print("<script>alert('报名失败');</script>");
         }
         request.removeAttribute("apply");
-        out.print("<script>window.location.href='/mbrgnv/apply'</script>");
     }
 
 %>
-<%@include file="footer.html" %>
 <script type="text/javascript">
     function submitData() {
         var name = $("#name").val();

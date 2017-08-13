@@ -17,6 +17,10 @@
     var pageIndex = "info";
 </script>
 <body style="text-align: center;">
+<%
+    String openId = (String) request.getAttribute("openId");
+    out.print("<script>var openId='" + openId + "';</script>");
+%>
 <img onclick="showPicture('${competitor.pictureUrl}')" style="width: 480px;height: 480px;margin: 100px auto;" src="${competitor.pictureUrl}">
 <p style="font-size: 47px;color: #f72f3f;">${competitor.name}</p>
 <div style="width: 380px;height: 50px;margin: 0 auto ;">

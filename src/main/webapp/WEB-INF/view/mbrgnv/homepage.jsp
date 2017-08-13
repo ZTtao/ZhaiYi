@@ -77,6 +77,10 @@
 <script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="/lib/bootstrap/js/bootstrap.min.js"></script>
 <body style="text-align: center;position: relative;">
+<%
+    String openId = (String) request.getAttribute("openId");
+    out.print("<script>var openId='" + openId + "';</script>");
+%>
 <div class="panel panel-default">
     <img style="width: 100%;" src="/resources/mbrgnv/img/homepage_top.png">
 </div>
@@ -189,7 +193,7 @@
         }
     });
     function showInfo(id) {
-        window.location.href = "/mbrgnv/info?id=" + id;
+        window.location.href = "/mbrgnv/info?id=" + id+"&openId="+openId;
     }
     function queryData(pageNum) {
         if (total != null) {

@@ -1,6 +1,7 @@
 package pers.zhentao.zhaiyi.MostBeautifulRuiGuNiangVote.util;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -12,12 +13,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.URL;
+import java.util.Date;
 
 /**
  * @author ZhangZhentao
  *         2017-08-08
  */
 public class CommonUtil {
+    private static Logger logger = Logger.getLogger(CommonUtil.class);
+
     public static JSONObject httpsRequest(String requestUrl, String requestMethod, String outputStr) {
         JSONObject jsonObject = null;
         try {
@@ -60,5 +64,18 @@ public class CommonUtil {
         }
         return jsonObject;
 
+    }
+
+    public static Boolean isSubscript(String openId) {
+        String accessToken = AccessTokenUtil.getInstance().getAccessToken();
+        String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
+        url = url.replace("ACCESS_TOKEN", accessToken).replace("OPENID", openId);
+        JSONObject jsonObject = CommonUtil.httpsRequest(url, "GET", null);
+        logger.info(jsonObject.toJSONString());
+        int subscribe = jsonObject.getInteger("subscribe");
+        if (subscribe == 1) {
+            return true;
+        }
+        return false;
     }
 }
